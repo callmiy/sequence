@@ -1,10 +1,13 @@
 defmodule Sequence do
   use Agent
 
+  @binary_no_name :erlang.unique_integer()
+  @list_no_name :erlang.unique_integer()
+
   @moduledoc """
   Module for generating sequential values.
 
-  Use `sequence/1` or `sequence/2` to generate
+  Use `Sequence.next/1` or `Sequence.next/2` to generate
   sequential values instead of calling this module directly.
   """
 
@@ -55,15 +58,11 @@ defmodule Sequence do
     Agent.update(__MODULE__, fn _ -> Map.new() end)
   end
 
+  def next(), do: next(@binary_no_name, & &1)
+  def next(list) when is_list(list), do: next(@list_no_name, list)
+
   def next(sequence_name) when is_binary(sequence_name) do
     next(sequence_name, &(sequence_name <> to_string(&1)))
-  end
-
-  def next(sequence_name) do
-    raise(
-      ArgumentError,
-      "Sequence name must be a string, got #{inspect(sequence_name)} instead"
-    )
   end
 
   def next(sequence_name, [_ | _] = list) do
