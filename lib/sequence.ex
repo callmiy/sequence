@@ -84,4 +84,33 @@ defmodule Sequence do
       {formatter.(current_value), new_sequences}
     end)
   end
+
+  @doc ~S"""
+  A sequence generator that can be seeded with a starting value.
+
+  ## Examples
+
+      iex> seeded("name")
+      0
+
+      iex> seeded("name")
+      1
+
+      iex> seeded("name1", 5)
+      5
+
+      iex> seeded("name1")
+      6
+
+  """
+  def seeded(name, start_value \\ 0) when is_binary(name) do
+    name = "seeded-#{name}"
+
+    Agent.get_and_update(__MODULE__, fn sequences ->
+      current_value = Map.get(sequences, name, start_value)
+      new_sequences = Map.put(sequences, name, current_value + 1)
+
+      {current_value, new_sequences}
+    end)
+  end
 end
